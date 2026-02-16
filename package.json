@@ -1,0 +1,13 @@
+{
+  "name": "@kerex/installs",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "validate": "tsx scripts/validate.ts"
+  },
+  "devDependencies": {
+    "tsx": "^4.7.0",
+    "typescript": "^5.7.0",
+    "zod": "^3.24.0"
+  }
+}

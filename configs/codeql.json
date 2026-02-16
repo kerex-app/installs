@@ -1,0 +1,33 @@
+{
+  "id": "codeql",
+  "name": "Install CodeQL",
+  "description": "Add GitHub CodeQL security analysis to scan for vulnerabilities on every push.",
+  "variables": {
+    "branch_name": "codeql/setup",
+    "commit_message": "Add CodeQL security analysis workflow",
+    "pr_title": "Add CodeQL security analysis",
+    "pr_body": "## CodeQL Setup\n\nThis PR adds [CodeQL](https://codeql.github.com/) for automated security scanning.\n\n### What's included\n\n- **`.github/workflows/codeql.yml`** — GitHub Actions workflow that runs CodeQL analysis on every push and PR, plus a weekly schedule\n\n### Next steps\n\n1. **Merge this PR**\n2. Security alerts appear in the Security tab of your repository\n3. CodeQL runs automatically on pushes and pull requests\n\n---\n\n*Installed with [Kerex](https://kerex.app)*"
+  },
+  "steps": [
+    { "id": "clone", "name": "Cloning repository", "action": "clone_repo" },
+    { "id": "branch", "name": "Creating branch", "action": "git", "params": ["checkout", "-b", "{{ branch_name }}"] },
+    {
+      "id": "workflow",
+      "name": "Writing CI workflow",
+      "action": "write_file",
+      "params": {
+        "path": ".github/workflows/codeql.yml",
+        "content": "name: CodeQL\n\non:\n  push:\n    branches: [main]\n  pull_request:\n    branches: [main]\n  schedule:\n    - cron: '0 6 * * 1'\n\njobs:\n  analyze:\n    runs-on: ubuntu-latest\n    permissions:\n      security-events: write\n      actions: read\n      contents: read\n    strategy:\n      matrix:\n        language: [javascript-typescript]\n    steps:\n      - uses: actions/checkout@v4\n      - uses: github/codeql-action/init@v3\n        with:\n          languages: ${{ matrix.language }}\n      - uses: github/codeql-action/autobuild@v3\n      - uses: github/codeql-action/analyze@v3\n        with:\n          category: /language:${{ matrix.language }}\n"
+      }
+    },
+    { "id": "stage", "name": "Committing changes", "action": "git", "params": ["add", ".github/workflows/codeql.yml"] },
+    { "id": "commit", "name": "Committing changes", "action": "git", "params": ["commit", "-m", "{{ commit_message }}"] },
+    { "id": "push", "name": "Pushing", "action": "push" },
+    { "id": "pr", "name": "Creating pull request", "action": "create_pr", "params": { "title": "{{ pr_title }}", "body": "{{ pr_body }}" } }
+  ],
+  "outputs": [
+    { "type": "text", "value": "CodeQL has been installed!" },
+    { "type": "text", "value": "A pull request has been created with the CodeQL security analysis workflow." },
+    { "type": "link", "href": "{{ steps.pr.pr_url }}", "text": "View Pull Request" }
+  ]
+}

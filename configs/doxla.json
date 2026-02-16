@@ -1,0 +1,25 @@
+{
+  "id": "doxla",
+  "name": "Install Doxla",
+  "description": "Add automatic documentation to any GitHub repository. No local setup required.",
+  "variables": {
+    "branch_name": "doxla/setup",
+    "commit_message": "Add Doxla documentation workflow",
+    "pr_title": "Add Doxla documentation workflow",
+    "pr_body": "## Doxla Documentation Setup\n\nThis PR sets up [Doxla](https://github.com/alsiola/doxla) — automatic documentation for your repository.\n\n### What's included\n\n- **`.github/workflows/doxla.yml`** — GitHub Actions workflow that builds and deploys your docs to GitHub Pages on every push to `main`\n- **`doxla` config in `package.json`** — Configuration for custom MDX components\n\n### Next steps\n\n1. **Enable GitHub Pages**: Settings → Pages → Source: GitHub Actions\n2. **Merge this PR**\n3. Docs deploy automatically on next push to `main`\n\n### What is Doxla?\n\nDoxla discovers all `.md` and `.mdx` files in your repository and builds a searchable documentation site deployed to GitHub Pages.\n\n---\n\n*Installed with [Kerex](https://kerex.app)*"
+  },
+  "steps": [
+    { "id": "clone", "name": "Cloning repository", "action": "clone_repo" },
+    { "id": "branch", "name": "Creating branch", "action": "git", "params": ["checkout", "-b", "{{ branch_name }}"] },
+    { "id": "init", "name": "Initialising Doxla", "action": "npx", "params": ["doxla", "init"] },
+    { "id": "stage", "name": "Committing changes", "action": "git", "params": ["add", ".github/workflows/doxla.yml", "package.json"] },
+    { "id": "commit", "name": "Committing changes", "action": "git", "params": ["commit", "-m", "{{ commit_message }}"] },
+    { "id": "push", "name": "Pushing", "action": "push" },
+    { "id": "pr", "name": "Creating pull request", "action": "create_pr", "params": { "title": "{{ pr_title }}", "body": "{{ pr_body }}" } }
+  ],
+  "outputs": [
+    { "type": "text", "value": "Doxla has been installed!" },
+    { "type": "text", "value": "A pull request has been created with the Doxla workflow and configuration." },
+    { "type": "link", "href": "{{ steps.pr.pr_url }}", "text": "View Pull Request" }
+  ]
+}

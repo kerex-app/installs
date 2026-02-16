@@ -1,0 +1,25 @@
+{
+  "id": "husky",
+  "name": "Install Husky",
+  "description": "Add Git hooks with Husky to enforce quality checks before every commit.",
+  "variables": {
+    "branch_name": "husky/setup",
+    "commit_message": "Add Husky Git hooks",
+    "pr_title": "Add Husky Git hooks",
+    "pr_body": "## Husky Setup\n\nThis PR adds [Husky](https://typicode.github.io/husky/) for Git hook management.\n\n### What's included\n\n- **`.husky/pre-commit`** — Pre-commit hook (runs on every commit)\n- **`package.json`** — Updated with `prepare` script for automatic setup\n\n### Next steps\n\n1. **Merge this PR**\n2. Run `npm install` to activate the hooks\n3. Edit `.husky/pre-commit` to add your checks (e.g. `npx lint-staged`)\n\n---\n\n*Installed with [Kerex](https://kerex.app)*"
+  },
+  "steps": [
+    { "id": "clone", "name": "Cloning repository", "action": "clone_repo" },
+    { "id": "branch", "name": "Creating branch", "action": "git", "params": ["checkout", "-b", "{{ branch_name }}"] },
+    { "id": "init", "name": "Initialising Husky", "action": "npx", "params": ["husky", "init"] },
+    { "id": "stage", "name": "Committing changes", "action": "git", "params": ["add", ".husky", "package.json"] },
+    { "id": "commit", "name": "Committing changes", "action": "git", "params": ["commit", "-m", "{{ commit_message }}"] },
+    { "id": "push", "name": "Pushing", "action": "push" },
+    { "id": "pr", "name": "Creating pull request", "action": "create_pr", "params": { "title": "{{ pr_title }}", "body": "{{ pr_body }}" } }
+  ],
+  "outputs": [
+    { "type": "text", "value": "Husky has been installed!" },
+    { "type": "text", "value": "A pull request has been created with Husky Git hooks." },
+    { "type": "link", "href": "{{ steps.pr.pr_url }}", "text": "View Pull Request" }
+  ]
+}

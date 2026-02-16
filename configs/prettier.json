@@ -1,0 +1,42 @@
+{
+  "id": "prettier",
+  "name": "Install Prettier",
+  "description": "Add consistent code formatting with Prettier and a CI check workflow.",
+  "variables": {
+    "branch_name": "prettier/setup",
+    "commit_message": "Add Prettier configuration and format-check workflow",
+    "pr_title": "Add Prettier configuration",
+    "pr_body": "## Prettier Setup\n\nThis PR adds [Prettier](https://prettier.io/) for consistent code formatting.\n\n### What's included\n\n- **`.prettierrc.json`** — Prettier configuration with sensible defaults\n- **`.github/workflows/format-check.yml`** — CI workflow that checks formatting on every push and PR\n\n### Next steps\n\n1. **Merge this PR**\n2. Run `npx prettier --write .` to format existing files\n3. CI will enforce formatting on future PRs\n\n---\n\n*Installed with [Kerex](https://kerex.app)*"
+  },
+  "steps": [
+    { "id": "clone", "name": "Cloning repository", "action": "clone_repo" },
+    { "id": "branch", "name": "Creating branch", "action": "git", "params": ["checkout", "-b", "{{ branch_name }}"] },
+    {
+      "id": "config",
+      "name": "Writing configuration",
+      "action": "write_file",
+      "params": {
+        "path": ".prettierrc.json",
+        "content": "{\n  \"semi\": true,\n  \"singleQuote\": true,\n  \"trailingComma\": \"all\",\n  \"printWidth\": 100,\n  \"tabWidth\": 2\n}\n"
+      }
+    },
+    {
+      "id": "workflow",
+      "name": "Writing CI workflow",
+      "action": "write_file",
+      "params": {
+        "path": ".github/workflows/format-check.yml",
+        "content": "name: Format Check\n\non:\n  push:\n    branches: [main]\n  pull_request:\n    branches: [main]\n\njobs:\n  format:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n      - uses: actions/setup-node@v4\n        with:\n          node-version: 20\n      - run: npx prettier --check .\n"
+      }
+    },
+    { "id": "stage", "name": "Committing changes", "action": "git", "params": ["add", ".prettierrc.json", ".github/workflows/format-check.yml"] },
+    { "id": "commit", "name": "Committing changes", "action": "git", "params": ["commit", "-m", "{{ commit_message }}"] },
+    { "id": "push", "name": "Pushing", "action": "push" },
+    { "id": "pr", "name": "Creating pull request", "action": "create_pr", "params": { "title": "{{ pr_title }}", "body": "{{ pr_body }}" } }
+  ],
+  "outputs": [
+    { "type": "text", "value": "Prettier has been installed!" },
+    { "type": "text", "value": "A pull request has been created with the Prettier config and CI workflow." },
+    { "type": "link", "href": "{{ steps.pr.pr_url }}", "text": "View Pull Request" }
+  ]
+}

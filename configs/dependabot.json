@@ -1,0 +1,33 @@
+{
+  "id": "dependabot",
+  "name": "Install Dependabot",
+  "description": "Enable automatic dependency updates with GitHub Dependabot.",
+  "variables": {
+    "branch_name": "dependabot/setup",
+    "commit_message": "Add Dependabot configuration",
+    "pr_title": "Add Dependabot configuration",
+    "pr_body": "## Dependabot Setup\n\nThis PR enables [Dependabot](https://docs.github.com/en/code-security/dependabot) for automatic dependency updates.\n\n### What's included\n\n- **`.github/dependabot.yml`** — Configuration for weekly npm and GitHub Actions dependency updates\n\n### Next steps\n\n1. **Merge this PR**\n2. Dependabot will start opening PRs for outdated dependencies\n3. Customise the schedule or add more ecosystems in `.github/dependabot.yml`\n\n---\n\n*Installed with [Kerex](https://kerex.app)*"
+  },
+  "steps": [
+    { "id": "clone", "name": "Cloning repository", "action": "clone_repo" },
+    { "id": "branch", "name": "Creating branch", "action": "git", "params": ["checkout", "-b", "{{ branch_name }}"] },
+    {
+      "id": "config",
+      "name": "Writing configuration",
+      "action": "write_file",
+      "params": {
+        "path": ".github/dependabot.yml",
+        "content": "version: 2\nupdates:\n  - package-ecosystem: npm\n    directory: /\n    schedule:\n      interval: weekly\n    open-pull-requests-limit: 10\n  - package-ecosystem: github-actions\n    directory: /\n    schedule:\n      interval: weekly\n    open-pull-requests-limit: 5\n"
+      }
+    },
+    { "id": "stage", "name": "Committing changes", "action": "git", "params": ["add", ".github/dependabot.yml"] },
+    { "id": "commit", "name": "Committing changes", "action": "git", "params": ["commit", "-m", "{{ commit_message }}"] },
+    { "id": "push", "name": "Pushing", "action": "push" },
+    { "id": "pr", "name": "Creating pull request", "action": "create_pr", "params": { "title": "{{ pr_title }}", "body": "{{ pr_body }}" } }
+  ],
+  "outputs": [
+    { "type": "text", "value": "Dependabot has been configured!" },
+    { "type": "text", "value": "A pull request has been created with Dependabot configuration." },
+    { "type": "link", "href": "{{ steps.pr.pr_url }}", "text": "View Pull Request" }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "id": "changesets",
+  "name": "Install Changesets",
+  "description": "Add version management and changelogs with Changesets.",
+  "variables": {
+    "branch_name": "changesets/setup",
+    "commit_message": "Add Changesets configuration",
+    "pr_title": "Add Changesets version management",
+    "pr_body": "## Changesets Setup\n\nThis PR adds [Changesets](https://github.com/changesets/changesets) for version management and changelog generation.\n\n### What's included\n\n- **`.changeset/config.json`** — Changesets configuration\n- **`.changeset/README.md`** — Instructions for contributors\n\n### Next steps\n\n1. **Merge this PR**\n2. Run `npx changeset` before making changes to create a changeset entry\n3. Run `npx changeset version` to bump versions and update changelogs\n4. Run `npx changeset publish` to publish to npm\n\n---\n\n*Installed with [Kerex](https://kerex.app)*"
+  },
+  "steps": [
+    { "id": "clone", "name": "Cloning repository", "action": "clone_repo" },
+    { "id": "branch", "name": "Creating branch", "action": "git", "params": ["checkout", "-b", "{{ branch_name }}"] },
+    { "id": "init", "name": "Initialising Changesets", "action": "npx", "params": ["@changesets/cli", "init"] },
+    { "id": "stage", "name": "Committing changes", "action": "git", "params": ["add", ".changeset"] },
+    { "id": "commit", "name": "Committing changes", "action": "git", "params": ["commit", "-m", "{{ commit_message }}"] },
+    { "id": "push", "name": "Pushing", "action": "push" },
+    { "id": "pr", "name": "Creating pull request", "action": "create_pr", "params": { "title": "{{ pr_title }}", "body": "{{ pr_body }}" } }
+  ],
+  "outputs": [
+    { "type": "text", "value": "Changesets has been installed!" },
+    { "type": "text", "value": "A pull request has been created with Changesets configuration." },
+    { "type": "link", "href": "{{ steps.pr.pr_url }}", "text": "View Pull Request" }
+  ]
+}
