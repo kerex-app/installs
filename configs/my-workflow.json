@@ -1,0 +1,85 @@
+{
+  "id": "my-workflow",
+  "name": "Install CI Workflow",
+  "description": "Add a CI workflow to any repository.",
+  "variables": {
+    "branch_name": "ci/setup",
+    "commit_message": "Add CI workflow",
+    "pr_title": "Add CI workflow",
+    "pr_body": "This PR adds a CI workflow.\n\n---\n*Installed with [Kerex](https://kerex.app)*"
+  },
+  "steps": [
+    {
+      "id": "clone",
+      "name": "Cloning repository",
+      "action": "clone_repo"
+    },
+    {
+      "id": "branch",
+      "name": "Creating branch",
+      "action": "git",
+      "params": [
+        "checkout",
+        "-b",
+        "{{ branch_name }}"
+      ]
+    },
+    {
+      "id": "workflow",
+      "name": "Writing workflow",
+      "action": "write_file",
+      "params": {
+        "path": ".github/workflows/ci.yml",
+        "content": "name: CI\n\non:\n  push:\n    branches: [main]\n  pull_request:\n    branches: [main]\n\njobs:\n  build:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n      - run: echo 'Hello'\n"
+      }
+    },
+    {
+      "id": "stage",
+      "name": "Staging changes",
+      "action": "git",
+      "params": [
+        "add",
+        "."
+      ]
+    },
+    {
+      "id": "commit",
+      "name": "Committing",
+      "action": "git",
+      "params": [
+        "commit",
+        "-m",
+        "{{ commit_message }}"
+      ]
+    },
+    {
+      "id": "push",
+      "name": "Pushing",
+      "action": "push"
+    },
+    {
+      "id": "pr",
+      "name": "Creating pull request",
+      "action": "create_pr",
+      "params": {
+        "title": "{{ pr_title }}",
+        "body": "{{ pr_body }}"
+      }
+    }
+  ],
+  "outputs": [
+    {
+      "type": "text",
+      "value": "Workflow installed!"
+    },
+    {
+      "type": "link",
+      "href": "{{ steps.pr.pr_url }}",
+      "text": "View Pull Request"
+    }
+  ],
+  "author": {
+    "name": "Alex",
+    "email": "alex@alexyoung.info"
+  }
+}
