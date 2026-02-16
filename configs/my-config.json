@@ -1,0 +1,81 @@
+{
+  "id": "my-config",
+  "name": "Install My Config",
+  "description": "Add a configuration file to any repository.",
+  "variables": {
+    "branch_name": "config/setup",
+    "commit_message": "Add configuration file",
+    "pr_title": "Add configuration",
+    "pr_body": "This PR adds a configuration file.\n\n---\n*Installed with [Kerex](https://kerex.app)*"
+  },
+  "steps": [
+    {
+      "id": "clone",
+      "name": "Cloning repository",
+      "action": "clone_repo"
+    },
+    {
+      "id": "branch",
+      "name": "Creating branch",
+      "action": "git",
+      "params": [
+        "checkout",
+        "-b",
+        "{{ branch_name }}"
+      ]
+    },
+    {
+      "id": "config",
+      "name": "Writing config",
+      "action": "write_file",
+      "params": {
+        "path": ".config.json",
+        "content": "{\n  \n}\n"
+      }
+    },
+    {
+      "id": "stage",
+      "name": "Staging changes",
+      "action": "git",
+      "params": [
+        "add",
+        "."
+      ]
+    },
+    {
+      "id": "commit",
+      "name": "Committing",
+      "action": "git",
+      "params": [
+        "commit",
+        "-m",
+        "{{ commit_message }}"
+      ]
+    },
+    {
+      "id": "push",
+      "name": "Pushing",
+      "action": "push"
+    },
+    {
+      "id": "pr",
+      "name": "Creating pull request",
+      "action": "create_pr",
+      "params": {
+        "title": "{{ pr_title }}",
+        "body": "{{ pr_body }}"
+      }
+    }
+  ],
+  "outputs": [
+    {
+      "type": "text",
+      "value": "Configuration installed!"
+    },
+    {
+      "type": "link",
+      "href": "{{ steps.pr.pr_url }}",
+      "text": "View Pull Request"
+    }
+  ]
+}
